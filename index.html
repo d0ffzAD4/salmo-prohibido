@@ -1269,14 +1269,7 @@
         screenEl.querySelectorAll('.opt, .opt-card').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
 
-        // Micro-feedback (só nas telas 3 e 4)
-        const feedback = btn.dataset.feedback;
-        if (feedback) {
-          showMicroFeedback(feedback);
-          setTimeout(next, 2000);
-        } else {
-          setTimeout(next, 280);
-        }
+        setTimeout(next, 280);
       });
     });
 
