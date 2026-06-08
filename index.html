@@ -569,13 +569,45 @@
       next();
     });
 
+    // Captura todos os parâmetros da URL atual (UTMs, fbclid, gclid, etc.)
+    const INCOMING_PARAMS = new URLSearchParams(window.location.search);
+
+    // Helper: anexa todos os parâmetros recebidos a qualquer URL externa
+    function withForwardedParams(url) {
+      if (!url || url.startsWith('#')) return url;
+      try {
+        const u = new URL(url, window.location.origin);
+        INCOMING_PARAMS.forEach((value, key) => {
+          if (!u.searchParams.has(key)) u.searchParams.set(key, value);
+        });
+        return u.toString();
+      } catch (_) {
+        // Fallback caso URL não parseie
+        const qs = INCOMING_PARAMS.toString();
+        if (!qs) return url;
+        return url + (url.includes('?') ? '&' : '?') + qs;
+      }
+    }
+
+    // Aplica forward em TODOS os links externos da página automaticamente
+    document.querySelectorAll('a[href^="http"], a[href^="//"]').forEach(a => {
+      const original = a.getAttribute('href');
+      a.setAttribute('href', withForwardedParams(original));
+    });
+
     document.getElementById('finalCta').addEventListener('click', (e) => {
       if (CONFIG.WEBHOOK_URL) fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(answers) }).catch(() => {});
       let target = CONFIG.FINAL_URL || e.currentTarget.getAttribute('href');
-      if (CONFIG.PASS_ANSWERS_AS_QUERY && target && !target.startsWith('#')) {
-        const p = new URLSearchParams();
-        Object.entries(answers).forEach(([k, v]) => p.append('q' + k, Array.isArray(v) ? v.join(',') : v));
-        target += (target.includes('?') ? '&' : '?') + p.toString();
+      if (target && !target.startsWith('#')) {
+        // 1) Adiciona as respostas do quiz
+        if (CONFIG.PASS_ANSWERS_AS_QUERY) {
+          const p = new URLSearchParams();
+          Object.entries(answers).forEach(([k, v]) => p.append('q' + k, Array.isArray(v) ? v.join(',') : v));
+          const qs = p.toString();
+          if (qs) target += (target.includes('?') ? '&' : '?') + qs;
+        }
+        // 2) Força a propagação de TODOS os parâmetros da URL atual (UTMs, fbclid, etc.)
+        target = withForwardedParams(target);
         e.preventDefault();
         window.location.href = target;
         return;
