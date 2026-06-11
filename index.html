@@ -436,9 +436,7 @@
           <p>El Salmo Prohibido no se vende. Pero quien lo recibe deja una <b>ofrenda simbólica</b> porque lo gratuito no se honra, y lo que no se honra pierde su fuerza.</p>
           <p style="font-size:17px;">Quien no ofrenda, no porta.</p>
         </div>
-        <a href="https://pay.hotmart.com/E106062672Q?off=c5nsp79j&checkoutMode=10" id="finalCta" style="text-decoration:none;display:block;margin-top:8px;">
-          <button class="cta pulse" style="width:100%;font-size:17px;">✦ Quiero Desbloquear la Abundancia</button>
-        </a>
+        <button id="finalCta" class="cta pulse" data-href="https://pay.hotmart.com/E106062672Q?off=c5nsp79j&checkoutMode=10" style="width:100%;font-size:17px;margin-top:8px;">✦ Quiero Desbloquear la Abundancia</button>
         <p class="final-fineprint">Acceso inmediato · Ofrenda simbólica única</p>
       </div>
     </section>
@@ -607,7 +605,7 @@
       }
 
       if (CONFIG.WEBHOOK_URL) fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(answers) }).catch(() => {});
-      let target = CONFIG.FINAL_URL || e.currentTarget.getAttribute('href');
+      let target = CONFIG.FINAL_URL || e.currentTarget.getAttribute('data-href');
       if (target && !target.startsWith('#')) {
         if (CONFIG.PASS_ANSWERS_AS_QUERY) {
           const p = new URLSearchParams();
