@@ -657,12 +657,7 @@
   async
   defer
 ></script>
-  <!-- Meta Pixel —
-       Carrega APENAS o fbevents.js para que fbq() esteja disponivel.
-       A inicializacao (fbq('init', ...)) e o PageView sao feitos pelo Utmify pixel.js,
-       que ja tem o pixel 1358378676176848 cadastrado no dashboard.
-       NAO chamar fbq('init') ou fbq('track','PageView') aqui — causaria init duplicada
-       e cada evento (PageView, InitiateCheckout, etc) dispararia 2x. -->
+  <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -672,6 +667,8 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window,document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','1358378676176848');
+    fbq('track','PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1358378676176848&ev=PageView&noscript=1"/></noscript>
 
