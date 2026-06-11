@@ -596,6 +596,17 @@
     });
 
     document.getElementById('finalCta').addEventListener('click', (e) => {
+      // Meta Pixel — InitiateCheckout com event_id pra deduplicação com CAPI
+      const eventId = 'ic_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+      if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+          content_name: 'Salmos Prohibidos',
+          content_category: 'Religion',
+          currency: 'USD',
+          value: 15.90
+        }, { eventID: eventId });
+      }
+
       if (CONFIG.WEBHOOK_URL) fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(answers) }).catch(() => {});
       let target = CONFIG.FINAL_URL || e.currentTarget.getAttribute('href');
       if (target && !target.startsWith('#')) {
@@ -606,7 +617,9 @@
           const qs = p.toString();
           if (qs) target += (target.includes('?') ? '&' : '?') + qs;
         }
-        // 2) Força a propagação de TODOS os parâmetros da URL atual (UTMs, fbclid, etc.)
+        // 2) Adiciona o event_id da deduplicação (pra usar depois na CAPI server-side)
+        target += (target.includes('?') ? '&' : '?') + 'event_id=' + encodeURIComponent(eventId);
+        // 3) Força a propagação de TODOS os parâmetros da URL atual (UTMs, fbclid, etc.)
         target = withForwardedParams(target);
         e.preventDefault();
         window.location.href = target;
